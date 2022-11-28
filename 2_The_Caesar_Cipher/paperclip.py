@@ -1,48 +1,4 @@
-"""
-Pyperclip
 
-A cross-platform clipboard module for Python, with copy & paste functions for plain text.
-By Al Sweigart al@inventwithpython.com
-BSD License
-
-Usage:
-  import pyperclip
-  pyperclip.copy('The text to be copied to the clipboard.')
-  spam = pyperclip.paste()
-
-  if not pyperclip.is_available():
-    print("Copy functionality unavailable!")
-
-On Windows, no additional modules are needed.
-On Mac, the pyobjc module is used, falling back to the pbcopy and pbpaste cli
-    commands. (These commands should come with OS X.).
-On Linux, install xclip or xsel via package manager. For example, in Debian:
-    sudo apt-get install xclip
-    sudo apt-get install xsel
-
-Otherwise on Linux, you will need the gtk or PyQt5/PyQt4 modules installed.
-
-gtk and PyQt4 modules are not available for Python 3,
-and this module does not work with PyGObject yet.
-
-Note: There seems to be a way to get gtk on Python 3, according to:
-    https://askubuntu.com/questions/697397/python3-is-not-supporting-gtk-module
-
-Cygwin is currently not supported.
-
-Security Note: This module runs programs with these names:
-    - which
-    - where
-    - pbcopy
-    - pbpaste
-    - xclip
-    - xsel
-    - klipper
-    - qdbus
-A malicious user could rename or add programs with these names, tricking
-Pyperclip into running them with whatever permissions the Python process has.
-
-"""
 __version__ = '1.7.0'
 
 import contextlib
@@ -399,10 +355,7 @@ def init_windows_clipboard():
 
     @contextlib.contextmanager
     def clipboard(hwnd):
-        """
-        Context manager that opens the clipboard and prevents
-        other applications from modifying the clipboard content.
-        """
+       
         # We may not get the clipboard handle immediately because
         # some other application is accessing it (?)
         # We try for at least 500ms to get the clipboard.
@@ -486,10 +439,7 @@ def init_wsl_clipboard():
 
 # Automatic detection of clipboard mechanisms and importing is done in deteremine_clipboard():
 def determine_clipboard():
-    '''
-    Determine the OS/platform and set the copy() and paste() functions
-    accordingly.
-    '''
+   
 
     global Foundation, AppKit, gtk, qtpy, PyQt4, PyQt5
 
@@ -561,20 +511,7 @@ def determine_clipboard():
 
 
 def set_clipboard(clipboard):
-    '''
-    Explicitly sets the clipboard mechanism. The "clipboard mechanism" is how
-    the copy() and paste() functions interact with the operating system to
-    implement the copy/paste feature. The clipboard parameter must be one of:
-        - pbcopy
-        - pbobjc (default on Mac OS X)
-        - gtk
-        - qt
-        - xclip
-        - xsel
-        - klipper
-        - windows (default on Windows)
-        - no (this is what is set when no clipboard mechanism can be found)
-    '''
+   
     global copy, paste
 
     clipboard_types = {'pbcopy': init_osx_pbcopy_clipboard,
@@ -595,44 +532,14 @@ def set_clipboard(clipboard):
 
 
 def lazy_load_stub_copy(text):
-    '''
-    A stub function for copy(), which will load the real copy() function when
-    called so that the real copy() function is used for later calls.
-
-    This allows users to import pyperclip without having determine_clipboard()
-    automatically run, which will automatically select a clipboard mechanism.
-    This could be a problem if it selects, say, the memory-heavy PyQt4 module
-    but the user was just going to immediately call set_clipboard() to use a
-    different clipboard mechanism.
-
-    The lazy loading this stub function implements gives the user a chance to
-    call set_clipboard() to pick another clipboard mechanism. Or, if the user
-    simply calls copy() or paste() without calling set_clipboard() first,
-    will fall back on whatever clipboard mechanism that determine_clipboard()
-    automatically chooses.
-    '''
+   
     global copy, paste
     copy, paste = determine_clipboard()
     return copy(text)
 
 
 def lazy_load_stub_paste():
-    '''
-    A stub function for paste(), which will load the real paste() function when
-    called so that the real paste() function is used for later calls.
-
-    This allows users to import pyperclip without having determine_clipboard()
-    automatically run, which will automatically select a clipboard mechanism.
-    This could be a problem if it selects, say, the memory-heavy PyQt4 module
-    but the user was just going to immediately call set_clipboard() to use a
-    different clipboard mechanism.
-
-    The lazy loading this stub function implements gives the user a chance to
-    call set_clipboard() to pick another clipboard mechanism. Or, if the user
-    simply calls copy() or paste() without calling set_clipboard() first,
-    will fall back on whatever clipboard mechanism that determine_clipboard()
-    automatically chooses.
-    '''
+   
     global copy, paste
     copy, paste = determine_clipboard()
     return paste()
